@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tema splash: layar navy dalam + logo SAVR, lalu pindah ke Theme.Savr. -->
+    <style name="Theme.Savr.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/savr_navy</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.Savr</item>
+    </style>
+
+    <!-- Tema dasar gelap (dialog tanggal bawaan sistem ikut gelap). -->
+    <style name="Theme.Savr" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/savr_navy</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>
