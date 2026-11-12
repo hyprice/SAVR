@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Data keuangan tidak ikut cloud backup. Pemindahan antar perangkat tetap diizinkan.
+     Pencadangan resmi: Profile > Backup data (file JSON yang dipegang pengguna). -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="database" path="savr-local.db" />
+        <exclude domain="database" path="savr-local.db-wal" />
+        <exclude domain="database" path="savr-local.db-shm" />
+    </cloud-backup>
+</data-extraction-rules>
