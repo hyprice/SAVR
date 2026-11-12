@@ -1,4 +1,5 @@
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
@@ -54,6 +55,13 @@ android {
 
     buildFeatures { compose = true }
 
+    // Java dan Kotlin HARUS memakai target yang sama (JDK 17) agar tidak muncul
+    // "Inconsistent JVM-target compatibility" (compileDebugJavaWithJavac vs kspDebugKotlin).
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
     packaging {
         resources.excludes += setOf(
             "/META-INF/{AL2.0,LGPL2.1}",
@@ -61,6 +69,13 @@ android {
             "DebugProbesKt.bin",
             "kotlin-tooling-metadata.json"
         )
+    }
+}
+
+// Kotlin (termasuk task KSP/Room) mengikuti target ini.
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
