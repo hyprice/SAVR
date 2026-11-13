@@ -76,7 +76,7 @@ fun PageList(content: LazyListScope.() -> Unit) {
 }
 
 @Composable
-private fun PageHeader(title: String, subtitle: String? = null) {
+internal fun PageHeader(title: String, subtitle: String? = null) {
     val p = LocalPalette.current
     Column(Modifier.padding(top = 6.dp)) {
         GText(title, 28.sp, FontWeight.Bold, p.text)
@@ -85,7 +85,7 @@ private fun PageHeader(title: String, subtitle: String? = null) {
 }
 
 @Composable
-private fun EmptyCard(title: String, subtitle: String, action: String? = null, onAction: () -> Unit = {}) {
+internal fun EmptyCard(title: String, subtitle: String, action: String? = null, onAction: () -> Unit = {}) {
     val p = LocalPalette.current
     Glass(Modifier.fillMaxWidth(), corner = 24.dp) {
         Column(Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -344,60 +344,3 @@ fun SearchPage(ui: UiModel, vm: SavrViewModel) {
     }
 }
 
-// ====================================================================== ANALYTICS
-
-@Composable
-fun AnalyticsPage(ui: UiModel) {
-    val p = LocalPalette.current
-    var range by rememberSaveable { mutableStateOf(1) } // 0=30 hari, 1=6 bulan, 2=12 bulan
-    val series = remember(ui.tx, range) {
-        when (range) {
-            0 -> Analytics.balanceSeries(ui.tx, true, 30)
-            1 -> Analytics.balanceSeries(ui.tx, false, 6)
-            else -> Analytics.balanceSeries(ui.tx, false, 12)
-        }
-    }
-    val months = remember(ui.tx) { Analytics.monthlyStats(ui.tx, 6) }
-    val inCats = remember(ui.tx) { Analytics.categoryTotals(ui.tx, TYPE_IN) }
-    val outCats = remember(ui.tx) { Analytics.categoryTotals(ui.tx, TYPE_OUT) }
-    PageList {
-        item(key = "header") { PageHeader("Analytics", "Perkembangan tabungan dan arus uangmu") }
-        item(key = "summary") {
-            Glass(Modifier.fillMaxWidth(), corner = 28.dp, tint = p.violet) {
-                Column(Modifier.padding(18.dp)) {
-                    GText("Ringkasan keuangan", 15.sp, FontWeight.Bold, p.text)
-                    Gap(12.dp)
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Metric("Saldo", Fmt.rupiahFit(ui.balance, 14), p.text, Modifier.weight(1f))
-                        Metric("Transaksi", ui.tx.size.toString(), p.text, Modifier.weight(1f))
-                    }
-                    Gap(12.dp)
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Metric("Total masuk", Fmt.rupiahFit(ui.totalIn, 14), p.income, Modifier.weight(1f))
-                        Metric("Total keluar", Fmt.rupiahFit(ui.totalOut, 14), p.expense, Modifier.weight(1f))
-                    }
-                    Gap(12.dp)
-                    val ratio = if (ui.totalIn > 0) ((ui.totalIn - ui.totalOut) * 100 / ui.totalIn).coerceAtLeast(0L) else 0L
-                    val avg = months.sumOf { it.net } / months.size
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Metric("Rasio tabungan", "$ratio%", p.text, Modifier.weight(1f))
-                        Metric("Rata-rata bersih/bln", Fmt.rupiahFit(avg, 14), p.text, Modifier.weight(1f))
-                    }
-                }
-            }
-        }
-        item(key = "growth") {
-            Glass(Modifier.fillMaxWidth(), corner = 28.dp) {
-                Column(Modifier.padding(18.dp)) {
-                    GText("Perkembangan tabungan", 15.sp, FontWeight.Bold, p.text)
-                    Gap(10.dp)
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        listOf("30 Hari", "6 Bulan", "12 Bulan").forEachIndexed { i, l -> GChip(l, range == i, { range = i }) }
-                    }
-                    Gap(14.dp)
-                    LineChart(series.map { it.value }, series.map { it.label })
-                    Gap(8.dp)
-                    val delta = series.last().value - series.first().value
-                    GText(
-                        "Perubahan pada periode ini: " + (if (delta >= 0) "+" else "−") + Fmt.rupiahFit(kotlin.math.abs(delta), 18),
-                        12.sp, FontWeight.Medium, if (delta >= 0) p.income else p.expens
