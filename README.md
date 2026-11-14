@@ -28,11 +28,6 @@ Aplikasi tabungan Android offline-first dengan antarmuka **Liquid Glass**
 | `Sheets.kt` | Editor transaksi/goal, detail, konfirmasi, About, `Branding` |
 | `MainActivity.kt` | Activity, tema, pager, navigation bar |
 
-## Kontrak data (jangan diubah tanpa Migration)
-- File DB `savr-local.db`; tabel `transactions` mempertahankan kolom v1 (`id, amount, note, type, createdAt`).
-- Uang = `Long` rupiah utuh. `type` = `"IN"`/`"OUT"`. Saldo selalu dihitung dari transaksi.
-- Upgrade dari v0.1: seluruh transaksi lama dipertahankan dan ditautkan ke goal utama "Target Utama" (Rp7.000.000).
-
 ## Build & rilis
 Lihat [`docs/RELEASE.md`](docs/RELEASE.md) (penandatanganan, ukuran APK, pemeriksaan) dan [`docs/TESTING.md`](docs/TESTING.md) (uji di perangkat).
 
